@@ -1,5 +1,5 @@
 function yhat = predict_in_sample(y, s, coef)
-% PREDICT_IN_SAMPLE  In-sample predictions (no trend term).
+% In-sample predictions INCLUDING the linear trend term.
 
     y = y(:);
     T = numel(y);
@@ -10,12 +10,12 @@ function yhat = predict_in_sample(y, s, coef)
     yhat = zeros(M,1);
 
     for k = 1:M
-        t = N + k;
+        t = N + k;  % actual time index
         sea = 0;
         for h = 1:K
             sea = sea + coef.alpha(h)*cos(2*pi*h*t/s) + coef.beta(h)*sin(2*pi*h*t/s);
         end
-        acc = coef.c + sea;
+        acc = coef.c + coef.d*t + sea;  % add trend here
         for i = 1:N
             acc = acc + coef.a(i)*y(t-i);
         end
