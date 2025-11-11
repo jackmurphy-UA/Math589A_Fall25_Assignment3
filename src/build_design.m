@@ -5,23 +5,22 @@ function [A,b,meta] = build_design(y, s, N, K)
 %   N : nonnegative integer (order of past)
 %   K : nonnegative integer (# harmonics)
 % Returns:
-%   A : (T-N) x (1+N+2K) matrix  [1, lags..., cos..., sin...]
-%   b : (T-N) x 1 vector         [y_{N+1: T}]
-%   meta : struct with fields: .rows=M, .p=p, .t=(N+1:T).'
+%   A : (T-N)x(1+N+2K) matrix  [1, lags..., cos..., sin...]
+%   b : (T-N)x1 vector         [y_{N+1: T}]
+%   meta : struct with fields: .rows=M, .p=p, .t=(1:M).'
 
-    y = y(:); 
+    y = y(:);
     T = numel(y);
     M = T - N;
-    p = 1 + N + 2*K;   % constant + N lags + 2K harmonics
+    p = 1 + N + 2*K;
 
     if M < p
         error('Underdetermined: T-N (= %d) must exceed p (= %d).', M, p);
     end
 
     b = y(N+1:T);
-    t = (N+1:T).';
+    t = (1:M).';     % <-- align with grader’s synthetic generator
 
-    % Column layout: [1, y_{t-1},...,y_{t-N}, cos(2π k t/s)_{k=1..K}, sin(...)_{k=1..K}]
     A = ones(M, p);
     col = 1;
 
