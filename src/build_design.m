@@ -1,10 +1,18 @@
 function [A,b,meta] = build_design(y, s, N, K)
-% BUILD_DESIGN  Construct LS system for N-th order difference eq + K harmonics + linear trend.
-%   Adds both a constant and a time-trend column.
+% BUILD_DESIGN  Construct LS system for N-th order difference eq + K harmonics.
+%   y : Tx1 double (column)
+%   s : scalar season (e.g., 12)
+%   N : nonnegative integer (order of past)
+%   K : nonnegative integer (# harmonics)
+% Returns:
+%   A : (T-N) x (1+N+2K) matrix  [1, lags..., cos..., sin...]
+%   b : (T-N) x 1 vector         [y_{N+1: T}]
+%   meta : struct with fields: .rows=M, .p=p, .t=(N+1:T).'
 
-    y = y(:);  T = numel(y);
+    y = y(:); 
+    T = numel(y);
     M = T - N;
-    p = 2 + N + 2*K;   % constant + trend + N lags + 2K harmonics
+    p = 1 + N + 2*K;   % constant + N lags + 2K harmonics
 
     if M < p
         error('Underdetermined: T-N (= %d) must exceed p (= %d).', M, p);
@@ -12,10 +20,11 @@ function [A,b,meta] = build_design(y, s, N, K)
 
     b = y(N+1:T);
     t = (N+1:T).';
-    A = ones(M, p);
-    A(:,2) = t;   % time-trend column
 
-    col = 2;
+    % Column layout: [1, y_{t-1},...,y_{t-N}, cos(2π k t/s)_{k=1..K}, sin(...)_{k=1..K}]
+    A = ones(M, p);
+    col = 1;
+
     % lag columns
     for i = 1:N
         col = col + 1;
@@ -27,6 +36,7 @@ function [A,b,meta] = build_design(y, s, N, K)
         col = col + 1;
         A(:, col) = cos(2*pi*k*t/s);
     end
+
     % sine columns
     for k = 1:K
         col = col + 1;
