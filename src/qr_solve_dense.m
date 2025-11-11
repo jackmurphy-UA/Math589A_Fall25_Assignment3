@@ -1,6 +1,5 @@
 function x = qr_solve_dense(A,b)
-% QR_SOLVE_DENSE  Solve min ||A*x - b||_2 using explicit Householder QR.
-%   No backslash, pinv, chol, svd, regress, fitlm, arima, etc.
+% Explicit Householder QR least-squares solve.
 
     [m,n] = size(A);
     R = A;
@@ -17,7 +16,6 @@ function x = qr_solve_dense(A,b)
 
     R = triu(R(1:n,1:n));
     x = zeros(n,1);
-
     for i = n:-1:1
         x(i) = (y(i) - R(i,i+1:end)*x(i+1:end)) / R(i,i);
     end
