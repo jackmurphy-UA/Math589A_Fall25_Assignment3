@@ -1,20 +1,21 @@
 function yhat = predict_in_sample(y, s, coef)
 % PREDICT_IN_SAMPLE  In-sample one-step predictions aligned to y(N+1:end)
+% Cosine-only seasonal component.
 
-    y = y(:); 
-    T = numel(y); 
-    N = numel(coef.a); 
+    y = y(:);
+    T = numel(y);
+    N = numel(coef.a);
     K = numel(coef.alpha);
 
-    M = T - N; 
+    M = T - N;
     yhat = zeros(M,1);
 
     for k = 1:M
-        t = N + k; % actual time index
+        t = N + k;
 
         sea = 0;
         for h = 1:K
-            sea = sea + coef.alpha(h)*cos(2*pi*h*t/s) + coef.beta(h)*sin(2*pi*h*t/s);
+            sea = sea + coef.alpha(h)*cos(2*pi*h*t/s);
         end
 
         acc = coef.c + sea;
