@@ -5,7 +5,7 @@ function [A,b,meta] = build_design(y, s, N, K)
 %   N : nonnegative integer (order of past)
 %   K : nonnegative integer (# harmonics)
 % Returns:
-%   A : (T-N)x(1+N+2K) matrix  [1, lags..., cos..., sin...]
+%   A : (T-N)x(1+N+2K) matrix  [1, cos..., sin..., lags...]
 %   b : (T-N)x1 vector         [y_{N+1: T}]
 %   meta : struct with fields: .rows=M, .p=p, .t=(N+1:T).'
 
@@ -19,27 +19,27 @@ function [A,b,meta] = build_design(y, s, N, K)
     end
 
     b = y(N+1:T);
-    t = (N+1:T).';   % <-- key: use actual time index N+1..T
+    t = (N+1:T).';   % actual time indices
 
     A = ones(M, p);
     col = 1;
 
-    % lag columns
-    for i = 1:N
-        col = col + 1;
-        A(:, col) = y(N+1-i : T-i);
-    end
-
-    % cosine columns (all cos, then all sin)
+    % --- cosine columns first ---
     for k = 1:K
         col = col + 1;
         A(:, col) = cos(2*pi*k*t/s);
     end
 
-    % sine columns
+    % --- sine columns ---
     for k = 1:K
         col = col + 1;
         A(:, col) = sin(2*pi*k*t/s);
+    end
+
+    % --- lag columns last ---
+    for i = 1:N
+        col = col + 1;
+        A(:, col) = y(N+1-i : T-i);
     end
 
     meta = struct('rows', M, 'p', p, 't', t);
