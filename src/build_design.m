@@ -7,7 +7,7 @@ function [A,b,meta] = build_design(y, s, N, K)
 % Returns:
 %   A : (T-N)x(1+N+2K) matrix  [1, lags..., cos..., sin...]
 %   b : (T-N)x1 vector         [y_{N+1: T}]
-%   meta : struct with fields: .rows=M, .p=p, .t=(0:M-1).'
+%   meta : struct with fields: .rows=M, .p=p, .t=(N+1:T).'
 
     y = y(:);
     T = numel(y);
@@ -19,7 +19,7 @@ function [A,b,meta] = build_design(y, s, N, K)
     end
 
     b = y(N+1:T);
-    t = (0:M-1).';   % phase-aligned with grader’s generator
+    t = (N+1:T).';   % <-- key: use actual time index N+1..T
 
     A = ones(M, p);
     col = 1;
@@ -30,7 +30,7 @@ function [A,b,meta] = build_design(y, s, N, K)
         A(:, col) = y(N+1-i : T-i);
     end
 
-    % cosine columns
+    % cosine columns (all cos, then all sin)
     for k = 1:K
         col = col + 1;
         A(:, col) = cos(2*pi*k*t/s);
