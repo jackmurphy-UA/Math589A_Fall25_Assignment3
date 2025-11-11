@@ -1,6 +1,4 @@
 function out = fit_once(y, s, N, K)
-% FIT_ONCE  Fit a single (N,K) model by QR-based least squares.
-
     [A,b,meta] = build_design(y, s, N, K);
     beta = qr_solve_dense(A, b);
 
@@ -8,8 +6,8 @@ function out = fit_once(y, s, N, K)
     RSS  = res.'*res;
     coef = unpack_coeffs(beta,N,K);
 
-    % === NEW LINE: define field 'd' for autograder ===
-    coef.d = [coef.c; coef.a(:)];
+    % FIXED: include all coefficients (constant + lags + harmonic terms)
+    coef.d = [coef.c; coef.a(:); coef.alpha(:); coef.beta(:)];
 
     out = struct( ...
         'beta' , beta, ...
@@ -21,6 +19,6 @@ function out = fit_once(y, s, N, K)
         'K'    , K, ...
         's'    , s, ...
         'res'  , res, ...
-        'd'    , coef.d ...   % also expose it at top level
+        'd'    , coef.d ...
     );
 end
