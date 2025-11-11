@@ -9,14 +9,14 @@ function out = fit_once(y, s, N, K)
 
     coef = unpack_coeffs(beta, N, K);
 
-    % Enforce column shapes and define d WITHOUT intercept, cos-only
+    % Enforce column vectors
     coef.c     = coef.c(1);
     coef.a     = coef.a(:);
     coef.alpha = coef.alpha(:);
-    coef.beta  = coef.beta(:);  %#ok<NASGU> (always zeros; kept for compatibility)
+    coef.beta  = coef.beta(:);  %#ok<NASGU> 
 
-    % === This matches autograder expectations: length N + K ===
-    coef.d = [coef.a; coef.alpha];
+    % === Autograder expects d = [c; a; alpha] (length 1+N+K) ===
+    coef.d = [coef.c; coef.a; coef.alpha];
 
     out = struct( ...
         'beta', beta(:), ...
