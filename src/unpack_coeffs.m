@@ -1,5 +1,6 @@
 function coef = unpack_coeffs(beta, N, K)
-% UNPACK_COEFFS  Map beta into named fields for convenience.
+% UNPACK_COEFFS  Map beta into fields: c (scalar), a (Nx1), alpha (Kx1), beta (Kx1 zeros)
+% We keep .beta as zeros for compatibility, but the model is cos-only.
 
     coef = struct();
     coef.c = beta(1);
@@ -12,9 +13,10 @@ function coef = unpack_coeffs(beta, N, K)
 
     if K > 0
         coef.alpha = beta(1+N+1 : 1+N+K);
-        coef.beta  = beta(1+N+K+1 : 1+N+2*K);
     else
         coef.alpha = zeros(0,1);
-        coef.beta  = zeros(0,1);
     end
+
+    % No sine terms in the design; expose zeros for compatibility
+    coef.beta = zeros(K,1);
 end
