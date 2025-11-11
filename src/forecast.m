@@ -1,5 +1,5 @@
 function yF = forecast(y, s, coef, H)
-% FORECAST  H-step-ahead forecast (no trend term).
+% H-step-ahead forecast INCLUDING the linear trend term.
 
     y = y(:);
     T = numel(y);
@@ -14,7 +14,7 @@ function yF = forecast(y, s, coef, H)
         for k = 1:K
             sea = sea + coef.alpha(k)*cos(2*pi*k*t/s) + coef.beta(k)*sin(2*pi*k*t/s);
         end
-        acc = coef.c + sea;
+        acc = coef.c + coef.d*t + sea;   % add trend here
         for i = 1:N
             if h - i <= 0
                 acc = acc + coef.a(i)*y(T-(i-1));
