@@ -19,12 +19,12 @@ function [A,b,meta] = build_design(y, s, N, K)
     end
 
     b = y(N+1:T);
-    t = (N+1:T).';   % actual time indices
+    t = (N+1:T).';
 
     A = ones(M, p);
     col = 1;
 
-    % --- cosine columns first ---
+    % --- cosine columns ---
     for k = 1:K
         col = col + 1;
         A(:, col) = cos(2*pi*k*t/s);
@@ -36,7 +36,7 @@ function [A,b,meta] = build_design(y, s, N, K)
         A(:, col) = sin(2*pi*k*t/s);
     end
 
-    % --- lag columns last ---
+    % --- lag columns ---
     for i = 1:N
         col = col + 1;
         A(:, col) = y(N+1-i : T-i);
